@@ -3,12 +3,8 @@ function createSystem(){
         chartSize : 100,
         numOfCpu : 4,
         numOfHdd : 2,
-        cpuChart1 : [0],
-        cpuChart2 : [0],
-        cpuChart3 : [0],
-        cpuChart4 : [0],
-        hddChart1 : [0],
-        hddChart2 : [0]
+        cpuCharts : [],
+        hddCharts : []
     }
     
     return system;
@@ -19,6 +15,16 @@ function start(system){
     /*range di valori da sommare per la generazione di numeri casuali*/
     var max = 10;
     var min = 0;
+    
+    function init(){
+        console.log("inizializzo sys");
+        
+        for(i = 0; i < sys.numOfCpu; i++)
+            sys.cpuCharts[i] = [0];
+        
+        for(i = 0; i < sys.numOfHdd; i++)
+            sys.hddCharts[i] = [0];
+    }
     
     function randomRange(val){
         var alpha = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -39,18 +45,14 @@ function start(system){
     }
     
     function next(){
-        var cpuIndex = sys.cpuChart1.length;
+        var cpuIndex = sys.cpuCharts[0].length;
         
         if(cpuIndex < sys.chartSize){
-            sys.cpuChart1[cpuIndex] = randomRange(sys.cpuChart1[cpuIndex-1]);
-            sys.cpuChart2[cpuIndex] = randomRange(sys.cpuChart2[cpuIndex-1]);
-            sys.cpuChart3[cpuIndex] = randomRange(sys.cpuChart3[cpuIndex-1]);
-            sys.cpuChart4[cpuIndex] = randomRange(sys.cpuChart4[cpuIndex-1]);            
+            for(i = 0; i < sys.numOfCpu; i++)
+                sys.cpuCharts[i][cpuIndex] = randomRange(sys.cpuCharts[i][cpuIndex-1]);       
         }else{
-            sys.cpuChart1.shift();
-            sys.cpuChart2.shift();
-            sys.cpuChart3.shift();
-            sys.cpuChart4.shift();
+            for(i = 0; i < sys.numOfCpu; i++)
+                sys.cpuCharts[i].shift();
         }        
     }
     
@@ -75,10 +77,13 @@ function start(system){
         next();
         draw();
     }
-    /*esecuzione*/
+    
+    init();
+    /*esecuzione: da cambiare next -> main*/
     setInterval(next, 1000);
     
 }
 
+/*TEST*/
 var s = createSystem();
 start(s);
