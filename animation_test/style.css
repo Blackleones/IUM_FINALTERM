@@ -1,0 +1,13 @@
+.elem{
+    width: 30em;
+    height: 0.6em;
+    padding: 0.05em;
+    background-color: rgba(31,26,26,0.9);
+}
+
+.elem > span{
+    display: block; /*essenziale: lo span è l'unico elemento nel div, cosi prende tutto lo spazio che vuole*/
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,255,22,1), rgba(0,255,22,1));
+    transition: width 0.2s ease-in-out;
+}
