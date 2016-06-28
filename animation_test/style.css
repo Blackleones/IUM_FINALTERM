@@ -1,11 +1,31 @@
-.elem{
+*{
+    font-family: 'Lato', sans-serif;
+    background-color: rgba(13,9,12,1);
+    color: rgba(255,255,255,1);
+}
+
+.pb-div{
+    padding-right: 1em;
+    padding-left: 1em;
+    padding-top: 0.8em;
+    padding-bottom: 0.8 em;
+}
+
+.pb-div > span{
+    padding-right: 1em;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.progress{
+    display: inline-block; /*mi serve per allineare la progbar al nome*/
     width: 30em;
     height: 0.6em;
-    padding: 0.05em;
+    padding: 0.07em;
     background-color: rgba(31,26,26,0.9);
 }
 
-.elem > span{
+.progress > span{
     display: block; /*essenziale: lo span è l'unico elemento nel div, cosi prende tutto lo spazio che vuole*/
     height: 100%;
     background: linear-gradient(to right, rgba(0,255,22,1), rgba(0,255,22,1));

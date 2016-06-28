@@ -1,6 +1,9 @@
 var DEBUG = false;
 
-function incWidth(span, callback){
+function incWidth(pb, callback){
+    var text = (pb.getElementsByTagName('span')[1]);
+    var span = (pb.getElementsByClassName('progress')[0]).getElementsByTagName('span')[0];
+    
     if(span.style.width == "100%"){
         callback();    
     }else{
@@ -14,13 +17,14 @@ function incWidth(span, callback){
         
         if(DEBUG)
             console.log(width);
+        
+        text.innerHTML = width + 1 + '%';
         span.style.width = width + 1 + '%';            
     }
 }
 
 function main(){
-    var div = document.getElementById('div1');
-    var span = div.getElementsByTagName('span')[0];
+    var pb = document.getElementById('cpu-1');
 
     /*
         il thread avvia una funziona aninoma che
@@ -31,7 +35,7 @@ function main(){
             il thread
     */
     var pbar = setInterval(function(){
-        incWidth(span, function(pbar){
+        incWidth(pb, function(pbar){
             clearInterval(pbar);
         });
     }, 200);
