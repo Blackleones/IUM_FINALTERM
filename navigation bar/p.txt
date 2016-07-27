@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <ul>
+                <li>HOME</li>
+                <li>CPU</li>
+                <li>RAM</li>
+                <li>HDD</li>
+            </ul>
+        </div>
+    </div><br>
+    <div id="HOME" style="display:none;">Pannello HOME</div>
+    <div id="CPU" style="display:none;">Pannello CPU</div>
+    <div id="RAM" style="display:none">Pannello RAM</div>
+    <div id="HDD" style="display:none;">Pannello HDD</div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+.navbar{
+    //border: 1px solid black;
+    padding: 10px 10px 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px #888;
+    overflow:hidden;
+    background
+}
+
+.navbar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+    cursor: pointer;
+}
+
+.navbar ul li{
+    padding: 10px;
+    border-right: 1px solid red;
+    background: linear-gradient(#EAF307, #B59600);;
+    padding: 10px;
+    display: inline;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+.navbar ul li:hover{
+    background: linear-gradient(#D41414, #901414);;
+    color: white;
+    transition: 0.5s ease-in-out;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.navbar ul li.selected{
+    background: linear-gradient(#14D414, #149014);
+    color: white;
+    text-shadow: 1px 1px 0 #000;
+}
+
+
+window.$ = function(search){
+    var list = document.querySelectorAll(search);
+    list.click = function(cb){
+        if(!cb) return;
+        for(var i = 0; i < list.length; i++){
+            list[i].onclick = cb;
+        }
+    };
+    return list;
+};
+
+$("li").click(function(){
+   var tutti  = $("li");
+   var id;
+   for(var i = 0; i < tutti.length; i++){
+       tutti[i].className = "";
+       id = tutti[i].innerText;
+       document.getElementById(id).style.display = "none";
+   }
+   id = this.innerText;
+   document.getElementById(id).style.display = "";
+   this.className = "selected";
+});

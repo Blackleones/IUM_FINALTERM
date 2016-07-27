@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="main-content">
+    <div class="container">
+        <div class="navbar">
+            <ul>
+                <li>HOME</li>
+                <li>CPU</li>
+                <li>RAM</li>
+                <li>HDD</li>
+            </ul>
+        </div>
+    </div><br>
+    
+    <div id="HOME" class="selected">
+        <!-- sezione cpu -->
+        <div class="pb-div" id='cpu-home'>
+            <span>CPU:</span>
+            <span>0%</span>
+            <div class="progress">
+                <span style="width: 0%"></span>
+            </div>
+        </div>
+        <!-- sezione ram -->
+        <div class="pb-div" id="ram-home">
+            <span>RAM:</span>
+            <span>0%</span>
+            <div class="progress blue">
+                <span style="width: 0%"></span>
+            </div>
+        </div>
+        <!-- sezione hdd -->
+        <div class="pb-div makeborder" id="hdd-home">
+            <span>HDD:</span>
+            <span>0%</span>
+            <div class="progress blue">
+                <span style="width: 0%"></span>
+            </div>
+        </div>
+        <!-- sezione processi -->
+        <div class="table" id="process-table">
+            <div class="row makeborder">
+                <div class="column">PROCESS NAME</div><!--
+                --><div class="column">CPU</div><!--
+                --><div class="column">RAM</div><!--
+                --><div class="column">HDD</div><!--
+            --></div>
+            <div class="row" id="process-1">
+                <div class="column">process1.exe</div><!--
+                --><div class="column c-cpu">0</div><!--
+                --><div class="column c-ram">0</div><!--
+               --><div class="column c-hdd">0</div><!--
+            --></div>
+            <div class="row" id="process-2">
+                <div class="column">process2.exe</div><!--
+                --><div class="column c-cpu">0</div><!--
+                --><div class="column c-ram">0</div><!--
+                --><div class="column c-hdd">0</div><!--
+            --></div>
+            <div class="row" id="process-3">
+                <div class="column">process3.exe</div><!--
+                --><div class="column c-cpu">0</div><!--
+                --><div class="column c-ram">0</div><!--
+                --><div class="column c-hdd">0</div><!--
+            --></div>
+            <div class="row" id="process-4">
+                <div class="column">process4.exe</div><!--
+                --><div class="column c-cpu">0</div><!--
+                --><div class="column c-ram">0</div><!--
+                --><div class="column c-hdd">0</div><!--
+            --></div>   
+        </div>
+    </div>
+    
+    <div id="CPU" style="display:none;">
+        <div class="pb-div" id='cpu-1'>
+            <span>CPU-1:</span>
+            <span>0%</span>
+            <div class="progress">
+                <span style="width: 0%"></span>
+            </div>
+        </div>
+        <div class="pb-div" id='cpu-2'>
+            <span>CPU-2:</span>
+            <span>0%</span>
+            <div class="progress">
+                <span style="width: 0%"></span>
+            </div>
+        </div>
+        <div class="pb-div" id='cpu-3'>
+            <span>CPU-3:</span>
+            <span>0%</span>
+                <div class="progress">
+                <span style="width: 0%"></span>
+            </div>
+        </div>
+        <div class="pb-div makeborder" id='cpu-4'>
+            <span>CPU-4:</span>
+            <span>0%</span>
+            <div class="progress">
+                <span style="width: 0%"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="RAM" style="display:none">Pannello RAM</div>
+    
+    <div id="HDD" style="display:none;">Pannello HDD</div>
+    
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

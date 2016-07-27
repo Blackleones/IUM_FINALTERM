@@ -1,0 +1,112 @@
+body{
+    width: 100%;
+    background-color: #0D0F14;
+}
+
+.main-content{
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 1000px;
+    background-color: white;
+    border: 2px solid black;
+}
+
+.navbar{
+    /*border: 1px solid black;*/
+    padding: 10px 10px 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px #888;
+    overflow:hidden;
+}
+
+.navbar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+    cursor: pointer;
+}
+
+.navbar ul li{
+    padding: 10px;
+    border-right: 1px solid red;
+    background: linear-gradient(#EAF307, #B59600);
+    padding: 10px;
+    display: inline;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+.navbar ul li:hover{
+    background: linear-gradient(#D41414, #901414);
+    color: white;
+    transition: 0.5s ease-in-out;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.navbar ul li.selected{
+    background: linear-gradient(#14D414, #149014);
+    color: white;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.pb-div {
+    padding: 13px 16px;
+}
+
+.makeborder{
+    border-bottom: 1px solid #0D0F14; 
+}
+
+.pb-div span{
+    padding-right: 7px;
+    font-size: 18px;
+    width: 55px;
+    display: inline-block;
+    text-align: center;
+}
+
+.progress{
+    display: inline-block; /*mi serve per allineare la progbar al nome*/
+    width: calc(100% - 155px); /*dalla grandezza totale disponibile ci tolgo 155px a sx cosi evito il conflitto con span*/
+    height: 10px;
+    padding: 1px;
+    background-color: rgba(31,26,26,0.9);
+}
+
+.progress span{
+    display: block; /*essenziale: lo span è l'unico elemento nel div, cosi prende tutto lo spazio che vuole*/
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,255,22,1), rgba(0,255,22,1));
+    transition:  2s ease-in-out;
+}
+
+.blue span{
+    background-color: blue;
+}
+
+.table{
+    padding: 13px 16px 13px 16px;
+}
+
+.column{
+    display: inline-block;
+    width: 500px;
+    padding: 5px 0 5px 0;
+    border-right: 1px solid black;
+    transition: 1s ease-in-out;
+}
+
+.column:nth-child(2){
+    width: 150px;
+    text-align: center;
+}
+
+.column:nth-child(3){
+    width: 150px;
+    text-align: center;
+}
+
+.column:nth-child(4){
+    width: 150px;
+    text-align: center;
+}

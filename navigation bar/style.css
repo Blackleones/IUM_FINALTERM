@@ -1,0 +1,32 @@
+a{
+    text-decoration: none;
+}
+
+.navbar{
+    border: 1px solid black;
+    padding: 10px 10px 10px 0;
+}
+
+.navbar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+    cursor: pointer;
+}
+
+.navbar ul li{
+    display: inline;
+    padding: 10px;
+    border-right: 1px solid red;
+    background: yellow;
+}
+
+.navbar ul li:hover{
+    background: red;
+    color: white;
+    transition: 0.5s ease-in-out;
+}
+
+.navbar ul li.selected{
+    background: green;
+}

@@ -1,0 +1,85 @@
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+function draw(points){
+    console.log(points);
+    clearCanvas();
+    drawAxis();
+    drawLine(points);
+    drawPoint(points);
+    newPoint(points);
+    
+    if(points.length == 20){
+        points.shift();
+        points.map(sub_x);
+    }
+}
+
+function sub_x(point){
+    point.x -= 20;
+}
+
+function clearCanvas(){
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+}
+
+function drawAxis(){
+    ctx.strokeStyle = "rgb(0,0,0)";
+    
+    //mi serve per disegnare anche durante la traslazione
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    //asse orizzontale
+    for(var y = 0; y <= 5; y++){
+        ctx.beginPath();
+        ctx.lineTo(0, y*40)
+        ctx.lineTo(canvas.width, y*40);
+        ctx.stroke();
+    }
+    
+    for(var x = 0; x <= 10; x++){
+        ctx.beginPath();
+        ctx.lineTo(x*40, 0);
+        ctx.lineTo(x*40, canvas.height);
+        ctx.stroke();
+    }
+    
+    ctx.restore();
+}
+
+function drawLine(points){
+    ctx.strokeStyle = "rgb(0,0,200)";
+    ctx.beginPath();
+    
+    for(var p in points){
+        p = points[p];
+        ctx.lineTo(p.x, p.y);
+    }
+
+    ctx.stroke();
+}
+
+function drawPoint(points){
+    ctx.fillStyle = "rgb(200,0,0)";
+    
+    for(var p in points){
+        p = points[p];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 2 * Math.PI, false);
+        ctx.fill();
+    }
+
+}
+
+function newPoint(points){
+    points.push({x: points.length * 20, y: Math.floor(Math.random() * 200)});
+}
+
+var points2 =[{x: 0, y: 200}];
+
+setInterval(function(){draw(points2)}, 200);

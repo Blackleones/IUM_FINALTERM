@@ -1,0 +1,217 @@
+/*
+funzione di ricerca di un qualsiasi elemento contenuto nel dom.
+funzionamento simile a jquery
+*/
+var $ = function(search){
+    var list = document.querySelectorAll(search);
+    list.click = function(cb){
+        if(!cb) return;
+        for(var i = 0; i < list.length; i++){
+            list[i].onclick = cb;
+        }
+    };
+    return list;
+};
+
+/*
+    prendo tutti gli elementi <li> del dom e gli associo una funzione da eseguire
+    nel caso dell'evento "click"
+*/
+$("li").click(function(){
+   var tutti  = $("li");
+   var id;
+   for(var i = 0; i < tutti.length; i++){
+       tutti[i].className = "";
+       id = tutti[i].innerText;
+       document.getElementById(id).style.display = "none";
+   }
+   id = this.innerText;
+   document.getElementById(id).style.display = "";
+   this.className = "selected";
+});
+
+function main(){
+    var monitor = {
+        cpu: [],
+        ram: [],
+        hdd: [],
+        process: []
+    };
+    
+    var pb_cpu = [
+        document.getElementById('cpu-home'),
+        document.getElementById('cpu-1'),
+        document.getElementById('cpu-2'),
+        document.getElementById('cpu-3'),
+        document.getElementById('cpu-4')
+    ];
+    
+    var pb_ram= [
+        document.getElementById('ram-home')
+    ];
+    
+    var pb_hdd = [
+        document.getElementById('hdd-home')
+    ];
+    
+    var process = [
+        document.getElementById('process-1'),
+        document.getElementById('process-2'),
+        document.getElementById('process-3'),
+        document.getElementById('process-4')
+    ];
+    
+    //carico le progress bar delle cpu dentro l'array monitor.cpu
+    for(var i in pb_cpu){
+        var node = pb_cpu[i];
+        monitor.cpu.push({
+            progress: (node.getElementsByClassName('progress')[0]).getElementsByTagName('span')[0],
+            text: (node.getElementsByTagName('span')[1])
+        });
+    }
+    
+    //carico le ram dentro l'array monitor.ram
+    for(var i in pb_ram){
+        var node = pb_ram[i];
+        monitor.ram.push({
+            progress: (node.getElementsByClassName('progress')[0]).getElementsByTagName('span')[0],
+            text: (node.getElementsByTagName('span')[1])
+        });
+    }
+    
+    //carico gli hdd dentro l'array monitor.hdd
+    for(var i in pb_hdd){
+        var node = pb_hdd[i];
+        monitor.hdd.push({
+            progress: (node.getElementsByClassName('progress')[0]).getElementsByTagName('span')[0],
+            text: (node.getElementsByTagName('span')[1])
+        });
+    }
+    
+    //carico i processi
+    for(var i in process){
+        var node = process[i];
+        monitor.process.push({
+            cpu: node.getElementsByClassName('c-cpu')[0],
+            ram: node.getElementsByClassName('c-ram')[0],
+            hdd: node.getElementsByClassName('c-hdd')[0]
+        });
+    }
+
+    var processData = function(){
+        var process = monitor.process[0];
+        var cpu = Math.floor(Math.random()*100);
+        var ram = Math.floor(Math.random()*100);
+        var hdd = Math.floor(Math.random()*100);
+        var scpu = 0;
+        var sram = 0;
+        var shdd = 0;
+        
+        process.cpu.innerHTML = cpu;
+        process.ram.innerHTML = ram;
+        process.hdd.innerHTML = hdd;
+        process.cpu.style.background = cpu <= 70 ? "rgba(153,255,109,1)": cpu < 90 ? "rgba(252,168,0,1)" : "rgba(255,77,79,1)";
+        process.ram.style.background = ram <= 70 ? "rgba(153,255,109,1)": ram < 90 ? "rgba(252,168,0,1)" : "rgba(255,77,79,1)";
+        process.hdd.style.background = hdd <= 70 ? "rgba(153,255,109,1)": hdd < 90 ? "rgba(252,168,0,1)" : "rgba(255,77,79,1)";
+        scpu += cpu;
+        sram += ram;
+        shdd += hdd;
+        
+        for(var i = 1; i < monitor.process.length ; i++){
+            process = monitor.process[i];
+            cpu = Math.floor(Math.random()*(100 - scpu));
+            ram = Math.floor(Math.random()*(100 - sram));
+            hdd = Math.floor(Math.random()*(100 - shdd));
+            
+            process.cpu.innerHTML = cpu;
+            process.ram.innerHTML = ram;
+            process.hdd.innerHTML = hdd;
+            process.cpu.style.background = cpu <= 70 ? "rgba(153,255,109,1)": cpu < 90 ? "rgba(252,168,0,1)" : "rgba(255,77,79,1)";
+            process.ram.style.background = ram <= 70 ? "rgba(153,255,109,1)": ram < 90 ? "rgba(252,168,0,1)" : "rgba(255,77,79,1)";
+            process.hdd.style.background = hdd <= 70 ? "rgba(153,255,109,1)": hdd < 90 ? "rgba(252,168,0,1)" : "rgba(255,77,79,1)";
+            scpu += cpu;
+            sram += ram;
+            shdd += hdd;
+            
+        }
+    }
+    
+    var componentUse = function(){
+        var component = [0,0,0];
+        
+        for(var process in monitor.process){
+            process = monitor.process[process];
+            component[0] += parseInt(process.cpu.innerHTML);
+            component[1] += parseInt(process.ram.innerHTML);
+            component[2] += parseInt(process.hdd.innerHTML);
+        }
+        
+        return component;
+    }
+    
+    var homeData = function(){
+        var data = componentUse();
+        
+        var cpuHome = monitor.cpu[0];
+        var ramHome = monitor.ram[0];
+        var hddHome = monitor.hdd[0];
+        
+        cpuHome.text.innerHTML = data[0] + "%";
+        cpuHome.progress.style.background = data[0] <= 70 ? "rgba(0,255,22,1)": data[0] < 90 ? "rgba(255,255,22,1)" : "rgba(229,61,0,1)";
+        cpuHome.progress.style.width = data[0] + "%";
+        
+        ramHome.text.innerHTML = data[1] + "%";
+        ramHome.progress.style.background = "rgba(0,138,252,1)";
+        ramHome.progress.style.width = data[1] + "%";
+       
+        hddHome.text.innerHTML = data[2] + "%";
+        hddHome.progress.style.background = "rgba(0,138,252,1)";
+        hddHome.progress.style.width = data[2] + "%";
+    }
+    
+    var cpuData = function(){
+        var ncpu = monitor.cpu.length;
+        var totalUse = parseInt(monitor.cpu[0].text.innerHTML);
+        var cpuArray = [];
+        var sum = 0;
+        
+        //parto da 1 perche cpu[0] è cpu-home
+        for(var i = 1; i < ncpu - 1; i++){
+            cpuArray[i] = Math.floor(Math.random()*(totalUse - sum));
+            sum += cpuArray[i];
+            
+            var cpu = monitor.cpu[i];
+            cpu.progress.style.background = cpuArray[i] <= 70 ? "rgba(0,255,22,1)": cpuArray[i] < 90 ? "rgba(255,255,22,1)" : "rgba(229,61,0,1)";
+            cpu.progress.style.width = cpuArray[i] + "%";
+            cpu.text.innerHTML = cpuArray[i]+"%";
+            
+        }
+        
+        cpuArray[ncpu - 1] = totalUse - sum;
+        sum += cpuArray[ncpu - 1];
+        var cpu = monitor.cpu[ncpu - 1];
+        cpu.progress.style.background = cpuArray[ncpu - 1] <= 70 ? "rgba(0,255,22,1)": cpuArray[ncpu -1] < 90 ? "rgba(255,255,22,1)" : "rgba(229,61,0,1)";
+        cpu.progress.style.width = cpuArray[ncpu - 1] + "%";
+        cpu.text.innerHTML = cpuArray[ncpu - 1]+"%";
+    }
+    
+    setInterval(function(){
+        processData();
+        homeData();
+        cpuData();
+    }, 3000);
+    
+}
+
+main();
+
+/*
+        for(var cpu in monitor.cpu){
+           cpu = monitor.cpu[cpu];
+           var rand = Math.floor(Math.random()*100);
+           var color = rand <= 70 ? "rgba(0,255,22,1)": rand < 90 ? "rgba(255,255,22,1)" : "rgba(229,61,0,1)";
+           cpu.progress.style.background = color;
+           cpu.progress.style.width = rand+"%";
+           cpu.text.innerHTML = rand+"%";
+        }
+*/
