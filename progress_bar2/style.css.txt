@@ -1,0 +1,31 @@
+.pb_container{
+    margin: 10px 5px;
+    box-shadow:  1px 2px 30px 1px #ccc;
+}
+
+.pb-div {
+    padding: 10px 14px;
+}
+
+.pb-div span{
+
+    font-size: 13px;
+    width: 50px;
+    display: inline-block;
+    text-align: center;
+}
+
+.progress{
+    display: inline-block; /*mi serve per allineare la progbar al nome*/
+    width: calc(100% - 155px); /*dalla grandezza totale disponibile ci tolgo 155px a sx cosi evito il conflitto con span*/
+    height: 6px;
+    padding: 1px;
+    background-color: rgba(31,26,26,0.61);
+}
+
+.progress span{
+    display: block; /*essenziale: lo span è l'unico elemento nel div, cosi prende tutto lo spazio che vuole*/
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,255,22,1), rgba(0,255,22,1));
+    transition:  2s ease-in-out;
+}

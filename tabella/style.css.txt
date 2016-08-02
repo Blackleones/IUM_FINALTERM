@@ -1,0 +1,60 @@
+*{
+    font-family: 'Roboto', sans-serif;
+}
+
+body{
+    background-color: rgb(245,245,245);
+}
+
+.table{
+    margin: 0 auto;
+    width: 500px;
+    margin-bottom: 5px;
+    box-shadow:  1px 2px 30px 1px #ccc;
+}
+
+.table > thead > tr{
+    font-size: 13px;
+    text-align: center;
+}
+
+.table > thead > tr > th{
+    padding: 4px 0 4px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.table > thead > tr > th:nth-child(1){
+    text-align: left;
+    padding-left: 3px;
+}
+
+.table > tbody{
+
+}
+
+.table > tbody > tr{
+    text-align: center;
+    transition:  0.5s ease-out;
+}
+
+.table > tbody > tr:hover{
+    background-color: rgba(3, 168, 243, 0.45);
+    transition:  0.5s ease-in;
+}
+
+.table > tbody > tr > td{
+    padding: 5px;
+    font-size: 12px;
+}
+
+.table > tbody > tr > td:nth-child(1){
+    text-align: left;
+}
+
+.process_label > input[type="checkbox"]{
+    vertical-align: middle;
+}
+
+.ordered{
+    background-color: rgba(255,192,6, 0.60);
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <table id="table" class="table">
+            <thead>
+                <tr>
+                    <th>Process name</th>
+                    <th class="ordered">Cpu</th>
+                    <th>Ram</th>
+                    <th>Hdd</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-title="process_name">
+                        <label class="process_label">
+                            <input type="checkbox" class="check" id="check_system.exe">
+                                System.exe
+                        </label>
+                        </td>
+                    <td data-title="cpu">20</td>
+                    <td data-title="ram">10</td>
+                    <td data-title="hdd">5</td>
+                </tr>
+                <tr>
+                    <td data-title="process_name">
+                        <label class="process_label">
+                            <input type="checkbox" class="check" id="check_system2.exe">
+                                System.exe
+                        </label>
+                        </td>
+                    <td data-title="cpu">20</td>
+                    <td data-title="ram">100</td>
+                    <td data-title="hdd">5</td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

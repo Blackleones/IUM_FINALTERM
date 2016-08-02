@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <div class="pb_container">
+            <div class="pb-div" id='cpu-home'>
+                    <span>CPU:</span>
+                    <span>100%</span>
+                    <div class="progress">
+                        <span style="width: 0%"></span>
+                    </div>
+            </div>
+            <div class="pb-div" id='cpu-home'>
+                    <span>CPU:</span>
+                    <span>0%</span>
+                    <div class="progress">
+                        <span style="width: 0%"></span>
+                    </div>
+            </div>
+            <div class="pb-div" id='cpu-home'>
+                    <span>CPU:</span>
+                    <span>0%</span>
+                    <div class="progress">
+                        <span style="width: 0%"></span>
+                    </div>
+            </div>
+        </div>
+    </body>
+    <script src="script.js"></script>
+</html>
