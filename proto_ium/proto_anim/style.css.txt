@@ -1,0 +1,189 @@
+*{
+    font-family: 'Roboto', sans-serif;
+}
+
+body{
+    width: 100%;
+}
+/*
+
+*/
+.main_container{
+    margin: 0 auto;
+    width: 900px;
+    box-shadow:  1px 2px 30px 1px #ccc;
+}
+/*
+#########################################
+            NAVIGATION BAR
+#########################################
+*/
+.navbar ul{
+    padding: 0px;
+    list-style-type: none;
+    cursor: pointer;
+}
+
+.navbar ul > li{
+    display: inline-block;
+    width: 25%;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(189,189,189, 0.75);
+    
+    text-align: center;
+}
+
+.navbar ul > li.menu_selected{
+    margin-bottom: -3px;
+    border-bottom: 3px solid rgb(249, 168, 37);
+}
+/*
+#########################################
+            HOME - PROGRESS BAR
+#########################################
+*/
+.container{
+    padding: 1px 40px 10px 40px;
+}
+
+.progress_container, .process-table-container{
+    padding: 0 0 5px 0;
+    box-shadow:  1px 2px 30px 1px #ccc;
+}
+
+.header{
+    margin-bottom: -2px;
+    padding: 5px 0 5px 15px;
+    background-color: rgba(13, 71, 161, 0.70);
+}
+
+.pb-div{
+    padding: 13px 16px;
+}
+
+.pb-div span{
+    padding-right: 7px;
+    font-size: 15px;
+    width: 55px;
+    display: inline-block;
+    text-align: center;
+}
+
+.progress{
+    display: inline-block; /*mi serve per allineare la progbar al nome*/
+    width: calc(100% - 155px); /*dalla grandezza totale disponibile ci tolgo 155px a sx cosi evito il conflitto con span*/
+    height: 10px;
+    padding: 1px;
+    background-color: rgba(31,26,26,0.9);
+}
+
+.progress span{
+    display: block; /*essenziale: lo span è l'unico elemento nel div, cosi prende tutto lo spazio che vuole*/
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,255,22,1), rgba(0,255,22,1));
+    transition:  2s ease-in-out;
+}
+/*
+#########################################
+            HOME - PROCESS TABLE
+#########################################
+*/
+.table{
+    margin: 0px auto;
+    padding: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+
+}
+
+.table > thead > tr{
+    font-size: 13px;
+    text-align: center;
+}
+
+.table > thead > tr > th{
+    padding: 4px 0 4px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.table > thead > tr > th:nth-child(1){
+    text-align: left;
+    padding-left: 3px;
+}
+
+.table > tbody > tr{
+    text-align: center;
+    transition:  0.5s ease-out;
+}
+
+.table > tbody > tr:hover{
+    background-color: rgba(3, 168, 243, 0.45);
+    transition:  0.5s ease-in;
+}
+
+.table > tbody > tr > td{
+    padding: 5px;
+    font-size: 12px;
+}
+
+.table > tbody > tr > td:nth-child(1){
+    text-align: left;
+}
+
+.process_label > input[type="checkbox"]{
+    vertical-align: middle;
+}
+
+.process_label span{
+    text-align: center;
+}
+
+.ordered{
+    background-color: rgba(255,192,6, 0.60);
+}
+
+.checked{
+    background-color: rgba(255, 111, 0, 0.60);
+}
+
+.remove-process{
+    padding: 0px 50px 0 395px;
+}
+
+.remove-button{
+    padding: 8px;
+    border: none;
+    border-radius: 2px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 15px;
+    color: white;
+    background: rgba(13, 71, 161, 0.70);
+}
+
+.remove-button span {
+  cursor: pointer;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.remove-button:hover span{
+    padding-right: 25px;
+}
+
+.remove-button span:after{
+    content: '»';
+    font-size: 25px;
+    position: absolute;
+    opacity: 0;
+    top: -8px;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.remove-button:hover span:after {
+  opacity: 1;
+  right: 0;
+}

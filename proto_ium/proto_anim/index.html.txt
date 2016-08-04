@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+    </head>
+    <body>
+        <div class="main_container">
+            <div class="navbar">
+                <ul>
+                    <li class="menu_selected">Home</li><!--
+                    --><li>Cpu</li><!--
+                    --><li>Ram</li><!--
+                    --><li>Hdd</li><!--
+                --></ul>
+            </div>
+            <div class="container">
+                <!-- HOME -->
+                <div class="home_container">
+                    <!-- PROGRESS BAR -->
+                    <div class="progress_container">
+                        <h3 class="header">System Component Overview</h3>
+                        <div class="pb-div" id='cpu-home'>
+                            <span>CPU:</span>
+                            <span>0%</span>
+                            <div class="progress">
+                                <span style="width: 0%"></span>
+                            </div>
+                        </div>
+                        <div class="pb-div" id="ram-home">
+                            <span>RAM:</span>
+                            <span>0%</span>
+                            <div class="progress blue">
+                                <span style="width: 0%"></span>
+                            </div>
+                        </div>
+                        <div class="pb-div" id="hdd-home">
+                            <span>HDD:</span>
+                            <span>0%</span>
+                            <div class="progress blue">
+                                <span style="width: 0%"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- PROCESS TABLE -->
+                    <div class="process-table-container">
+                        <h3 class="header">Process Overview</h3>
+                        <table id="table" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Process name</th>
+                                    <th class="ordered">Cpu</th>
+                                    <th>Ram</th>
+                                    <th>Hdd</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               <!-- DA GENERARE TRAMITE SCRIPT -->
+                            </tbody>
+                        </table>
+                        <div class="remove-process" style="display:none">
+                            <button class="remove-button"><span>END PROCESS</span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="cpu_container">
+                    
+                </div>
+                <div class="ram_container">
+                    
+                </div>
+                <div class="hdd_container">
+                    
+                </div>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>

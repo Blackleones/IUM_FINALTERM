@@ -1,0 +1,385 @@
+/*
+#########################################
+    STRUTTURA DATI PER IL SIMULATORE
+#########################################
+*/
+var processDict = [
+    'windows explorer',
+    'google chrome',
+    'adobe reader',
+    'vlc',
+    'battlefield',
+    'portal',
+    'sublime text',
+    'spotify',
+    'netflix',
+    'github',
+    'visual studio',
+    'photoshop',
+    'doom',
+    'nvidia manager',
+    'microsoft edge'
+    ];
+    
+//struttura per la gestione dei dati
+var components = {
+    cpu: [],
+    ram: 
+        {
+            color: "rgb(200,0,0)",
+            size: 6, //6gb
+            points: [{x: 0, y: 0}]
+        },
+    hdd: [],
+    process: 
+        [
+            {
+                name: "System.exe",
+                cpu: 0,
+                ram: 0,
+                hdd: 0
+            }    
+        ]
+}
+
+var initComponents = function(n_cpu, n_hdd){
+    
+    if(n_cpu == undefined || n_hdd == undefined || isNaN(n_cpu) || isNaN(n_hdd) || n_cpu < 0 || n_hdd < 0){
+        console.log("errore parametri inizializzazione");
+        components = undefined;
+        return;
+    }
+
+    for(var i = 0; i < n_cpu; i++)
+        components.cpu.push(
+            {
+                num: i,
+                name: "cpu_" + i,
+                color: "rgb(200,0,0)",
+                points: [{x: 0, y: 0}]
+            }    
+        );
+        
+    for(var i = 0; i < n_hdd; i++)
+        components.hdd.push(
+            {
+                num: i,
+                name: "hdd_" + i,
+                color: "rgb(200,0,0)",
+                points: [{x: 0, y: 0}]
+            }    
+        );
+}
+/*
+######################################
+                HDD
+######################################
+*/
+var hddStep = function(){
+    function currentUse(){
+        var count = 0;
+        
+        for(var i = 0; i < components.process.length; i++)
+            count += components.process[i].hdd;
+            
+        return count;
+    }
+    
+    var totalUse = currentUse();
+    var sum = 0;
+    
+    for(var i = 0; i < components.hdd.length - 1; i++){
+        sum = pointsStep(components.hdd[i], totalUse, sum);
+    }
+    
+    checkAndShift(components.hdd[i].points);
+    
+    components.hdd[i].points.push(
+        {
+            x: components.hdd[i].length * 20,
+            y: totalUse - sum
+        }
+    );
+}
+/*
+######################################
+                RAM
+######################################
+*/
+var ramStep = function(){
+    function currentUse(){
+        var count = 0;
+        
+        for(var i = 0; i < components.process.length; i++)
+            count += components.process[i].ram;
+            
+        return count;
+    }
+    
+    checkAndShift(components.ram.points);
+    
+    components.ram.points.push(
+        {
+            x: components.ram.points.length * 20,
+            y: currentUse()
+        }
+    );
+}
+/*
+######################################
+                CPU
+######################################
+*/
+var cpuStep = function(){
+    function currentUse(){
+        var count = 0;
+        
+        for(var i = 0; i < components.process.length; i++)
+            count += components.process[i].cpu;
+            
+        return count;
+    }
+    
+    var totalUse = currentUse();
+    var sum = 0;
+    
+    for(var i = 0; i < components.cpu.length - 1; i++){
+        sum = pointsStep(components.cpu[i], totalUse, sum);
+    }
+    
+    checkAndShift(components.cpu[i].points);
+    
+    components.cpu[i].points.push(
+        {
+            x: components.cpu[i].length * 20,
+            y: totalUse - sum
+        }
+    );
+}
+/*
+######################################
+            FUNZIONI COMUNI
+######################################
+*/
+
+function checkAndShift(parr){
+    if(parr.length == 20){
+        parr.shift();
+        parr.map(sub_x);
+    }
+}
+
+function step(){
+    processStep();
+    cpuStep();
+    ramStep();
+    hddStep();
+}
+
+function sub_x(p){p.x -= 20;}
+    
+var pointsStep = function(parr, totalUse, sum){
+
+    checkAndShift(parr.points);
+    
+    var newY = Math.floor(Math.random() * (totalUse - sum));
+    parr.points.push(
+        {
+            x: parr.points.length * 20,
+            y: newY
+        }
+    );
+        
+    sum += newY;
+    return sum;
+}
+/*
+######################################
+                PROCESS
+######################################
+*/
+var addProcess = function(){
+    var processName = processDict[Math.floor(Math.random()*processDict.length - 1)]
+    
+    components.process.push(
+        {
+            name: processName,
+            cpu: 0,
+            ram: 0,
+            hdd: 0
+        }    
+    );
+
+    console.log("aggiunto processo: " + processName)
+}
+
+var processStep = function(){
+    var cpu = Math.floor(Math.random()*100);
+    var ram = Math.floor(Math.random()*100);
+    var hdd = Math.floor(Math.random()*100);
+    var scpu = cpu, sram = ram, shdd = hdd;
+    
+    components.process[0].cpu = cpu;
+    components.process[0].ram = ram;
+    components.process[0].hdd = hdd;
+    
+    for(var i = 1; i < components.process.length; i++){
+        cpu = Math.floor(Math.random()*(100 - scpu));
+        ram = Math.floor(Math.random()*(100 - sram));
+        hdd = Math.floor(Math.random()*(100 - shdd));
+        scpu += cpu;
+        sram += ram;
+        shdd += hdd;
+        
+        components.process[i].cpu = cpu;
+        components.process[i].ram = ram;
+        components.process[i].hdd = hdd;
+    }
+}
+
+var removeProcess = function(processName){
+    var index = -1;
+
+    if(processName == "system.exe"){
+        console.log("impossibile eliminare system.exe");
+        return;
+    }
+
+    for(var i = 0; i < components.process.length; i++){
+        if(components.process[i].name == processName){
+            index = i;
+            break;
+        }
+    }
+    
+    if(index > -1){
+        components.process.splice(index, 1);
+        console.log("processo " + processName + " eliminato. Si trovava in posizione " + index);
+    }
+    else
+        console.log("nessun processo " + processName + " trovato")
+}
+
+/*
+#########################################
+    STRUTTURA DATI PER UI
+#########################################
+*/
+var monitor = {
+    currentView: 'home',
+    cpuHome: undefined,
+    ramHome: undefined,
+    hddHome: undefined,
+    table: undefined,
+    cpu: [],
+    ram: [],
+    hdd: [],
+    row: [] //le righe del task manager
+}
+/*
+#########################################
+    ALG. ANIMAZIONE
+#########################################
+*/
+var animateHomePB = function(){
+    var totalCpu = 0;
+    var totalRam = 0;
+    var totalHdd = 0;
+    
+    for(var i = 0; i < components.process.length; i++){
+        totalCpu += components.process[i].cpu;
+        totalRam += components.process[i].ram;
+        totalHdd += components.process[i].hdd;
+    }
+    var i = monitor.cpuHome.getElementsByClassName('progress')[0];
+    monitor.cpuHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.width = totalCpu + "%";
+    monitor.cpuHome.getElementsByTagName('span')[1].innerHTML = totalCpu + "%";
+    monitor.ramHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.width = totalRam + "%";
+    monitor.ramHome.getElementsByTagName('span')[1].innerHTML = totalRam + "%";
+    monitor.hddHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.width = totalHdd + "%";
+    monitor.hddHome.getElementsByTagName('span')[1].innerHTML = totalHdd + "%";
+}
+/*
+#########################################
+    ALG. GENERAZIONE UI HOME
+#########################################
+*/
+/*
+fare funzione di aggiunta di una singola riga. questa funzione deve essere chiamata
+ogni volta che inseriamo un nuovo processo
+*/
+var generateProcessTable = function(){
+    var tbody = monitor.table.getElementsByTagName('tbody')[0];
+    
+    for(var p in components.process){
+        p = components.process[p];
+        
+        var tr = document.createElement('tr');
+        var processTD = document.createElement('td');
+        processTD.setAttribute('data-title', 'process_name');
+        
+        var processLabel = document.createElement('label');
+        processLabel.setAttribute('class', 'process_label');
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.class = 'class';
+        cb.id = 'check_' + p.name;
+        
+        var spanName = document.createElement('span');
+        spanName.innerHTML = p.name;
+        
+        var cputd = document.createElement('td');
+        cputd.setAttribute('data-title', 'cpu');
+        cputd.innerHTML = p.cpu;
+        
+        var ramtd = document.createElement('td');
+        ramtd.setAttribute('data-title', 'ram');
+        ramtd.innerHTML = p.ram;
+        
+        var hddtd = document.createElement('td');
+        hddtd.setAttribute('data-title', 'hdd');
+        hddtd.innerHTML = p.hdd;
+    
+        processLabel.appendChild(cb);
+        processLabel.appendChild(spanName);
+        processTD.appendChild(processLabel);
+        tr.appendChild(processTD);
+        tr.appendChild(cputd);
+        tr.appendChild(ramtd);
+        tr.appendChild(hddtd);
+    
+        tbody.appendChild(tr);
+        monitor.row.push(tr);
+    }
+}
+
+var generateHome = function(){
+    monitor.cpuHome = document.getElementById('cpu-home');
+    monitor.ramHome = document.getElementById('ram-home');
+    monitor.hddHome = document.getElementById('hdd-home');
+    monitor.table = document.getElementById('table');
+    
+    generateProcessTable();
+}
+
+var generateUI = function(){
+    generateHome();
+}
+
+/*test*/
+initComponents(4,2);
+console.log(components);
+console.log(monitor);
+generateUI();
+
+function run(){
+    step();
+    draw();
+}
+
+function draw(){
+    step();
+    animateHomePB();
+}
+
+setInterval(function(){draw()}, 3000);
