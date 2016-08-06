@@ -6,7 +6,7 @@
     </head>
     <body>
         <div class="main_container">
-            <div class="navbar">
+            <div class="navbar" id="navbar">
                 <ul>
                     <li class="menu_selected">Home</li><!--
                     --><li>Cpu</li><!--
@@ -16,7 +16,7 @@
             </div>
             <div class="container">
                 <!-- HOME -->
-                <div class="home_container">
+                <div class="home_container" id="home_container">
                     <!-- PROGRESS BAR -->
                     <div class="progress_container">
                         <h3 class="header">System Component Overview</h3>
@@ -63,13 +63,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="cpu_container">
+                <div class="cpu_container" style="display:none" id="cpu_container">
+                    <div class="cpu-charts">
+                        <h3 class="header">Cpu charts</h3>
+                        <!-- DA GENERARE TRAMITE SCRIPT -->
+                    </div>
+                </div>
+                <div class="ram_container" style="display:none" id="ram_container">
                     
                 </div>
-                <div class="ram_container">
-                    
-                </div>
-                <div class="hdd_container">
+                <div class="hdd_container" id="hdd_container">
                     
                 </div>
             </div>

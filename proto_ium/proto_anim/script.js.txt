@@ -163,7 +163,7 @@ var cpuStep = function(){
     
     components.cpu[i].points.push(
         {
-            x: components.cpu[i].length * 20,
+            x: components.cpu[i].points.length * 20,
             y: totalUse - sum
         }
     );
@@ -339,11 +339,16 @@ var changeCheckProcess = function(pname){
 ################################################################################
 */
 var monitor = {
-    currentView: 'home',
+    homeContainer: undefined,
+    cpuContainer: undefined,
+    ramContainer: undefined,
+    hddContainer: undefined,
     cpuHome: undefined,
     ramHome: undefined,
     hddHome: undefined,
     table: undefined,
+    cpu_canvas: [],
+    ram_canvas: [],
     cpu: [],
     ram: [],
     hdd: [],
@@ -388,7 +393,76 @@ var animateTable = function(){
    monitor.row = [];
    generateProcessTable();
 }
+/*
+#########################################
+    ALG. ANIMAZIONE CPU CONTAINER
+#########################################
+*/
+function clearCanvas(canvas, ctx){
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+}
 
+function drawAxis(canvas, ctx){
+    ctx.strokeStyle = "rgb(0,0,0)";
+    
+    //mi serve per disegnare anche durante la traslazione
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    //asse orizzontale
+    for(var y = 0; y <= 5; y++){
+        ctx.beginPath();
+        ctx.lineTo(0, y*40)
+        ctx.lineTo(canvas.width, y*40);
+        ctx.stroke();
+    }
+    
+    for(var x = 0; x <= 10; x++){
+        ctx.beginPath();
+        ctx.lineTo(x*40, 0);
+        ctx.lineTo(x*40, canvas.height);
+        ctx.stroke();
+    }
+    
+    ctx.restore();
+}
+
+function drawLine(points, ctx, canvas){
+    ctx.strokeStyle = "rgb(0,0,200)";
+    ctx.beginPath();
+    
+    for(var p in points){
+        p = points[p];
+        ctx.lineTo(p.x, canvas.height - p.y);
+    }
+
+    ctx.stroke();
+}
+
+function drawPoint(points, ctx, canvas){
+    ctx.fillStyle = "rgb(200,0,0)";
+    
+    for(var p in points){
+        p = points[p];
+        ctx.beginPath();
+        ctx.arc(p.x, canvas.height - p.y, 3, 2 * Math.PI, false);
+        ctx.fill();
+    }
+
+}
+
+var animateCpuContainer = function(){
+       for(var i = 0; i < monitor.cpu_canvas.length; i++){
+            clearCanvas(monitor.cpu_canvas[i].canv, monitor.cpu_canvas[i].ctx);
+            drawAxis(monitor.cpu_canvas[i].canv, monitor.cpu_canvas[i].ctx);
+            drawLine(components.cpu[i].points, monitor.cpu_canvas[i].ctx, monitor.cpu_canvas[i].canv);
+            drawPoint(components.cpu[i].points, monitor.cpu_canvas[i].ctx, monitor.cpu_canvas[i].canv);
+       }
+}
 /*
 ################################################################################
     ALG. GENERAZIONE UI
@@ -457,11 +531,7 @@ var addRow = function(p){
         
         return tr;
 }
-/*
-    NOTA: per adesso si basa su una struttura components.process statica:
-    nel caso vi fosse ordinamento dobbiamo riportare questo ordinamento su
-    monitor.row (la soluzione più veloce è quella di sovrascrivere i monitor.row)
-*/
+
 var removeRow = function(pname){
     var tbody = monitor.table.getElementsByTagName('tbody')[0];
     var rows = tbody.getElementsByTagName('tr');
@@ -556,23 +626,113 @@ var setHomeListeners = function(){
     },false);
     
 }
+/*
+#########################################
+    ALG. GENERAZIONE CPU CONTAINER
+#########################################
+*/
+var generateCpuContainer = function(){
+    var cpu_charts = monitor.cpuContainer.getElementsByClassName('cpu-charts')[0];
+    
+    for(var i = 0; i < components.cpu.length; i++){
+        var container = document.createElement('div');
+        container.setAttribute('class', 'canvas_container');
+        var name = document.createElement('h5');
+        name.setAttribute('class', 'subHeader');
+        name.innerHTML = 'CPU ' + i;
+        var canvas = document.createElement('canvas');
+        canvas.setAttribute('class', 'canvas');
+        canvas.setAttribute('id', 'cpu_canvas_' + i);
+        canvas.style.width = "400px";
+        canvas.style.height = "200px";
+        
+        container.appendChild(name);
+        container.appendChild(canvas);
+        cpu_charts.appendChild(container);
+        
+        monitor.cpu_canvas.push(
+            {
+                ctx: canvas.getContext('2d'),
+                canv: canvas
+            }
+        );
+    }
+}
+/*
+#########################################
+    ALG. GENERAZIONE UI COMUNI
+#########################################
+*/
+var setGeneralListeners = function(){
+    var navbar = document.getElementById('navbar');
+    var ul = navbar.getElementsByTagName('ul')[0];
+    var li = ul.getElementsByTagName('li');
+    
+    function clearTabs(){
+        for(var i = 0; i < li.length; i++){
+            li[i].setAttribute('class', '');
+        }
+        
+        monitor.homeContainer.style.display = 'none';
+        monitor.cpuContainer.style.display = 'none';
+        monitor.ramContainer.style.display = 'none';
+        monitor.hddContainer.style.display = 'none';
+    }
+    
+    li[0].addEventListener("click",function(e){
+        clearTabs();
+        li[0].setAttribute('class', 'menu_selected');
+        monitor.homeContainer.style.display = '';
+    },false);
+    
+    li[1].addEventListener("click",function(e){
+        clearTabs();
+        li[1].setAttribute('class', 'menu_selected');
+        monitor.cpuContainer.style.display = '';
+    },false);
+    
+    li[2].addEventListener("click",function(e){
+        clearTabs();
+        li[2].setAttribute('class', 'menu_selected');
+        monitor.ramContainer.style.display = '';
+    },false);
+    
+    li[3].addEventListener("click",function(e){
+        clearTabs();
+        li[3].setAttribute('class', 'menu_selected');
+        monitor.hddContainer.style.display = '';
+    },false);
+}
 
 var generateUI = function(){
+    monitor.homeContainer = document.getElementById('home_container');
+    monitor.cpuContainer = document.getElementById('cpu_container');
+    monitor.ramContainer = document.getElementById('ram_container');
+    monitor.hddContainer = document.getElementById('hdd_container');
+    
+    setGeneralListeners();
     generateHome();
+    generateCpuContainer();
+
+    
 }
 
 /*test*/
 function main()
 {
     initComponents(4,2);
-    addProcess();
+    console.log(components);
+    
+    for(var i = 0; i < 5; i++)
+        addProcess();
+    
     generateUI();
 }
 
 function draw(){
     step();
     animateHomePB();
-    
+    animateCpuContainer();
     console.log("check table consistency: " + checkTableConsistency());
 }
 
