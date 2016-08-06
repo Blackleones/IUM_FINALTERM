@@ -4,6 +4,7 @@
 #########################################
 */
 var processDict = [
+    'system',
     'windows explorer',
     'google chrome',
     'adobe reader',
@@ -18,11 +19,21 @@ var processDict = [
     'photoshop',
     'doom',
     'nvidia manager',
-    'microsoft edge'
+    'microsoft edge',
+    'android',
+    'telegram',
+    'paint',
+    'file explorer',
+    'cortana',
+    'siri',
+    'steam',
+    'origin',
+    'blender'
     ];
     
 //struttura per la gestione dei dati
 var components = {
+    criterion: 'cpu',
     cpu: [],
     ram: 
         {
@@ -34,10 +45,11 @@ var components = {
     process: 
         [
             {
-                name: "System.exe",
+                name: processDict[0],
                 cpu: 0,
                 ram: 0,
-                hdd: 0
+                hdd: 0,
+                check: false
             }    
         ]
 }
@@ -171,9 +183,11 @@ function checkAndShift(parr){
 
 function step(){
     processStep();
+    processOrderCriterion(components.criterion);
     cpuStep();
     ramStep();
     hddStep();
+
 }
 
 function sub_x(p){p.x -= 20;}
@@ -198,15 +212,57 @@ var pointsStep = function(parr, totalUse, sum){
                 PROCESS
 ######################################
 */
+//non funge
+var processOrderCriterion = function(criterion){
+    if(criterion == 'cpu')
+        components.process.sort(cpuCriterion);
+    else if(criterion == 'ram')
+        components.process.sort(ramCriterion);
+    else if(criterion == 'hdd')
+        components.process.sort(hddCriterion);
+        
+}
+
+function cpuCriterion(p, q){
+    if(p.cpu < q.cpu)
+        return 1;
+        
+    if(p.cpu > q.cpu)
+        return -1;
+        
+    return 0;
+}
+
+function ramCriterion(p, q){
+    if(p.ram < q.ram)
+        return 1;
+        
+    if(p.ram > q.ram)
+        return -1;
+        
+    return 0;
+}
+
+function hddCriterion(p, q){
+    if(p.hdd < q.hdd)
+        return 1;
+        
+    if(p.hdd > q.hdd)
+        return -1;
+        
+    return 0;
+}
+
 var addProcess = function(){
-    var processName = processDict[Math.floor(Math.random()*processDict.length - 1)]
+    var processName = processDict[Math.floor(Math.random()*(processDict.length - 1)) + 1];
     
     components.process.push(
         {
             name: processName,
             cpu: 0,
             ram: 0,
-            hdd: 0
+            hdd: 0,
+            check: false
         }    
     );
 
@@ -215,18 +271,25 @@ var addProcess = function(){
 
 var processStep = function(){
     var cpu = Math.floor(Math.random()*100);
+    cpu = Math.floor(cpu - (cpu * 65) / 100);
     var ram = Math.floor(Math.random()*100);
+    ram = Math.floor(ram - (ram * 80) / 100);
     var hdd = Math.floor(Math.random()*100);
+    hdd = Math.floor(hdd - (hdd * 90) / 100);
     var scpu = cpu, sram = ram, shdd = hdd;
     
     components.process[0].cpu = cpu;
     components.process[0].ram = ram;
     components.process[0].hdd = hdd;
     
+    //ci tolgo una percentuale per rendere la simulazione più reale
     for(var i = 1; i < components.process.length; i++){
         cpu = Math.floor(Math.random()*(100 - scpu));
+        cpu = Math.floor(cpu - (cpu * 65) / 100);
         ram = Math.floor(Math.random()*(100 - sram));
+        ram = Math.floor(ram - (ram * 80) / 100);
         hdd = Math.floor(Math.random()*(100 - shdd));
+        hdd = Math.floor(hdd - (hdd * 90) / 100);
         scpu += cpu;
         sram += ram;
         shdd += hdd;
@@ -240,9 +303,9 @@ var processStep = function(){
 var removeProcess = function(processName){
     var index = -1;
 
-    if(processName == "system.exe"){
+    if(processName == processDict[0]){
         console.log("impossibile eliminare system.exe");
-        return;
+        return false;
     }
 
     for(var i = 0; i < components.process.length; i++){
@@ -255,15 +318,25 @@ var removeProcess = function(processName){
     if(index > -1){
         components.process.splice(index, 1);
         console.log("processo " + processName + " eliminato. Si trovava in posizione " + index);
+        return true;
     }
-    else
+    else{
         console.log("nessun processo " + processName + " trovato")
+        return false;
+    }
+        
 }
 
+var changeCheckProcess = function(pname){
+    for(var i = 0; i < components.process.length; i++){
+        if(components.process[i].name == pname)
+            components.process[i].check = !components.process[i].check;
+    }
+}
 /*
-#########################################
+################################################################################
     STRUTTURA DATI PER UI
-#########################################
+################################################################################
 */
 var monitor = {
     currentView: 'home',
@@ -277,8 +350,13 @@ var monitor = {
     row: [] //le righe del task manager
 }
 /*
-#########################################
+################################################################################
     ALG. ANIMAZIONE
+################################################################################
+*/
+/*
+#########################################
+    ALG. ANIMAZIONE HOME
 #########################################
 */
 var animateHomePB = function(){
@@ -298,31 +376,60 @@ var animateHomePB = function(){
     monitor.ramHome.getElementsByTagName('span')[1].innerHTML = totalRam + "%";
     monitor.hddHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.width = totalHdd + "%";
     monitor.hddHome.getElementsByTagName('span')[1].innerHTML = totalHdd + "%";
-}
-/*
-#########################################
-    ALG. GENERAZIONE UI HOME
-#########################################
-*/
-/*
-fare funzione di aggiunta di una singola riga. questa funzione deve essere chiamata
-ogni volta che inseriamo un nuovo processo
-*/
-var generateProcessTable = function(){
-    var tbody = monitor.table.getElementsByTagName('tbody')[0];
     
-    for(var p in components.process){
-        p = components.process[p];
-        
+    animateTable();
+}
+
+var animateTable = function(){
+   var oldtbody = monitor.table.getElementsByTagName('tbody')[0];
+   var tbody = document.createElement('tbody');
+   monitor.table.removeChild(oldtbody);
+   monitor.table.appendChild(tbody);
+   monitor.row = [];
+   generateProcessTable();
+}
+
+/*
+################################################################################
+    ALG. GENERAZIONE UI
+################################################################################
+*/
+/*
+#########################################
+    ALG. GESTIONE PROCESS TABLE
+#########################################
+*/
+var checkTableConsistency = function(){
+    return monitor.row.length == components.process.length;
+}
+
+var addRow = function(p){
         var tr = document.createElement('tr');
+        
+        tr.addEventListener("click",function(e){
+            var check = tr.getAttribute('class');
+            var pname = tr.getElementsByTagName('td')[0].getAttribute('data-title');
+            
+            if(check == 'checked')
+                tr.setAttribute('class', '');
+            else
+                tr.setAttribute('class', 'checked');
+                
+                changeCheckProcess(pname);
+    },false);
+        
+        if(p.check == true)
+            tr.setAttribute('class', 'checked');
+            
         var processTD = document.createElement('td');
-        processTD.setAttribute('data-title', 'process_name');
+        processTD.setAttribute('data-title', p.name);
         
         var processLabel = document.createElement('label');
         processLabel.setAttribute('class', 'process_label');
         var cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.class = 'class';
+        cb.checked = p.check;
         cb.id = 'check_' + p.name;
         
         var spanName = document.createElement('span');
@@ -347,12 +454,56 @@ var generateProcessTable = function(){
         tr.appendChild(cputd);
         tr.appendChild(ramtd);
         tr.appendChild(hddtd);
+        
+        return tr;
+}
+/*
+    NOTA: per adesso si basa su una struttura components.process statica:
+    nel caso vi fosse ordinamento dobbiamo riportare questo ordinamento su
+    monitor.row (la soluzione più veloce è quella di sovrascrivere i monitor.row)
+*/
+var removeRow = function(pname){
+    var tbody = monitor.table.getElementsByTagName('tbody')[0];
+    var rows = tbody.getElementsByTagName('tr');
     
-        tbody.appendChild(tr);
-        monitor.row.push(tr);
+    if(removeProcess(pname) == true){
+        for(var i = 0; i < rows.length; i++){
+            var processName = rows[i].getElementsByTagName('td')[0];
+            
+            if(processName.getAttribute('data-title') == pname){
+                tbody.removeChild(rows[i]);
+                monitor.row.splice(i, 1);
+            }
+        }
     }
 }
 
+var generateProcessTable = function(){
+    var tbody = monitor.table.getElementsByTagName('tbody')[0];
+    var endProcess = false;
+    
+    for(var p in components.process){
+        p = components.process[p];
+        
+        var tr = addRow(p);
+        
+        if(endProcess == false && tr.getAttribute('class') == 'checked')
+            endProcess = true;
+        
+        tbody.appendChild(tr);
+        monitor.row.push(tr);
+    }
+    
+    if(endProcess == true)
+        document.getElementById('remove-process').style.display = '';
+    else
+        document.getElementById('remove-process').style.display = 'none';
+}
+/*
+#########################################
+    ALG. GENERAZIONE HOME
+#########################################
+*/
 var generateHome = function(){
     monitor.cpuHome = document.getElementById('cpu-home');
     monitor.ramHome = document.getElementById('ram-home');
@@ -360,6 +511,50 @@ var generateHome = function(){
     monitor.table = document.getElementById('table');
     
     generateProcessTable();
+    setHomeListeners();
+}
+
+var setHomeListeners = function(){
+    var thead = monitor.table.getElementsByTagName('thead')[0];
+    var ths = thead.getElementsByTagName('tr')[0].getElementsByTagName('th');
+    var endProcess = document.getElementById('remove-process');
+    
+    function clearCriterion(){
+        for(var i = 0; i < ths.length; i++)
+            ths[i].setAttribute('class', '');
+    }
+    
+    //ths[0] è processName che non ha alcun impatto sull'ordine dei processi
+    ths[1].addEventListener("click",function(e){
+        clearCriterion();
+        components.criterion = 'cpu';
+        ths[1].setAttribute('class', 'ordered');
+    },false);
+    
+    ths[2].addEventListener("click",function(e){
+        clearCriterion();
+        components.criterion = 'ram';
+        ths[2].setAttribute('class', 'ordered');
+    },false);
+    
+    ths[3].addEventListener("click",function(e){
+        clearCriterion();
+        components.criterion = 'hdd';
+        ths[3].setAttribute('class', 'ordered');
+    },false);
+    
+    endProcess.addEventListener("click",function(e){
+        var trs = monitor.table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        for(var i = 0; i < trs.length; i++){
+            if(trs[i].getAttribute('class') == 'checked'){
+                var pname = trs[i].getElementsByTagName('td')[0].getAttribute('data-title');
+                removeRow(pname);
+            } 
+        }
+        
+    },false);
+    
 }
 
 var generateUI = function(){
@@ -367,19 +562,19 @@ var generateUI = function(){
 }
 
 /*test*/
-initComponents(4,2);
-console.log(components);
-console.log(monitor);
-generateUI();
-
-function run(){
-    step();
-    draw();
+function main()
+{
+    initComponents(4,2);
+    addProcess();
+    generateUI();
 }
 
 function draw(){
     step();
     animateHomePB();
+    
+    console.log("check table consistency: " + checkTableConsistency());
 }
 
+main();
 setInterval(function(){draw()}, 3000);

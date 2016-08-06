@@ -58,7 +58,7 @@
                                <!-- DA GENERARE TRAMITE SCRIPT -->
                             </tbody>
                         </table>
-                        <div class="remove-process" style="display:none">
+                        <div class="remove-process" id="remove-process" style="display:none">
                             <button class="remove-button"><span>END PROCESS</span></button>
                         </div>
                     </div>

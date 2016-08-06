@@ -103,7 +103,9 @@ body{
 
 .table > thead > tr > th{
     padding: 4px 0 4px 0;
+    cursor: pointer;
     border-bottom: 1px solid rgba(0,0,0,0.12);
+    transition:  0.5s ease-out;
 }
 
 .table > thead > tr > th:nth-child(1){
@@ -140,6 +142,7 @@ body{
 
 .ordered{
     background-color: rgba(255,192,6, 0.60);
+    transition:  0.5s ease-in;
 }
 
 .checked{
@@ -167,20 +170,6 @@ body{
   display: inline-block;
   position: relative;
   transition: 0.5s;
-}
-
-.remove-button:hover span{
-    padding-right: 25px;
-}
-
-.remove-button span:after{
-    content: '»';
-    font-size: 25px;
-    position: absolute;
-    opacity: 0;
-    top: -8px;
-    right: -20px;
-    transition: 0.5s;
 }
 
 .remove-button:hover span:after {
