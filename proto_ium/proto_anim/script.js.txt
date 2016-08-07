@@ -28,7 +28,15 @@ var processDict = [
     'siri',
     'steam',
     'origin',
-    'blender'
+    'blender',
+    'whatsapp',
+    'google now',
+    'virtual box',
+    'windows media player',
+    'illustrator',
+    'gimp',
+    'inkscape',
+    'skype'
     ];
     
 //struttura per la gestione dei dati
@@ -108,7 +116,7 @@ var hddStep = function(){
     
     components.hdd[i].points.push(
         {
-            x: components.hdd[i].length * 20,
+            x: components.hdd[i].points.length * 20,
             y: totalUse - sum
         }
     );
@@ -348,7 +356,8 @@ var monitor = {
     hddHome: undefined,
     table: undefined,
     cpu_canvas: [],
-    ram_canvas: [],
+    ram_canvas: {},//un solo canvas
+    hdd_canvas: [],//un canvas per disco
     cpu: [],
     ram: [],
     hdd: [],
@@ -376,15 +385,19 @@ var animateHomePB = function(){
     }
     var i = monitor.cpuHome.getElementsByClassName('progress')[0];
     monitor.cpuHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.width = totalCpu + "%";
+    monitor.cpuHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.background = totalCpu <= 70 ? "rgba(0,255,22,1)": totalCpu < 90 ? "rgba(255,255,22,1)" : "rgba(229,61,0,1)";
     monitor.cpuHome.getElementsByTagName('span')[1].innerHTML = totalCpu + "%";
     monitor.ramHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.width = totalRam + "%";
+    monitor.ramHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.background = totalRam <= 70 ? "rgba(0,255,22,1)": totalRam < 90 ? "rgba(255,255,22,1)" : "rgba(229,61,0,1)";
     monitor.ramHome.getElementsByTagName('span')[1].innerHTML = totalRam + "%";
     monitor.hddHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.width = totalHdd + "%";
     monitor.hddHome.getElementsByTagName('span')[1].innerHTML = totalHdd + "%";
-    
+    monitor.hddHome.getElementsByClassName('progress')[0].getElementsByTagName('span')[0].style.background = totalHdd <= 70 ? "rgba(0,255,22,1)": totalHdd < 90 ? "rgba(255,255,22,1)" : "rgba(229,61,0,1)";
     animateTable();
 }
-
+/*
+    per animare la tabella la cancello e la rigenero tutta da capo.
+*/
 var animateTable = function(){
    var oldtbody = monitor.table.getElementsByTagName('tbody')[0];
    var tbody = document.createElement('tbody');
@@ -395,7 +408,7 @@ var animateTable = function(){
 }
 /*
 #########################################
-    ALG. ANIMAZIONE CPU CONTAINER
+    ALG. ANIMAZIONE CANVAS CONTAINER
 #########################################
 */
 function clearCanvas(canvas, ctx){
@@ -454,13 +467,41 @@ function drawPoint(points, ctx, canvas){
     }
 
 }
-
+/*
+#########################################
+    ALG. ANIMAZIONE CPU CONTAINER
+#########################################
+*/
 var animateCpuContainer = function(){
        for(var i = 0; i < monitor.cpu_canvas.length; i++){
             clearCanvas(monitor.cpu_canvas[i].canv, monitor.cpu_canvas[i].ctx);
             drawAxis(monitor.cpu_canvas[i].canv, monitor.cpu_canvas[i].ctx);
             drawLine(components.cpu[i].points, monitor.cpu_canvas[i].ctx, monitor.cpu_canvas[i].canv);
             drawPoint(components.cpu[i].points, monitor.cpu_canvas[i].ctx, monitor.cpu_canvas[i].canv);
+       }
+}
+/*
+#########################################
+    ALG. ANIMAZIONE RAM CONTAINER
+#########################################
+*/
+var animateRamContainer = function(){
+    clearCanvas(monitor.ram_canvas.canv, monitor.ram_canvas.ctx);
+    drawAxis(monitor.ram_canvas.canv, monitor.ram_canvas.ctx);
+    drawLine(components.ram.points, monitor.ram_canvas.ctx, monitor.ram_canvas.canv);
+    drawPoint(components.ram.points, monitor.ram_canvas.ctx, monitor.ram_canvas.canv);
+}
+/*
+#########################################
+    ALG. ANIMAZIONE HDD CONTAINER
+#########################################
+*/
+var animateHddContainer = function(){
+       for(var i = 0; i < monitor.hdd_canvas.length; i++){
+            clearCanvas(monitor.hdd_canvas[i].canv, monitor.hdd_canvas[i].ctx);
+            drawAxis(monitor.hdd_canvas[i].canv, monitor.hdd_canvas[i].ctx);
+            drawLine(components.hdd[i].points, monitor.hdd_canvas[i].ctx, monitor.hdd_canvas[i].canv);
+            drawPoint(components.hdd[i].points, monitor.hdd_canvas[i].ctx, monitor.hdd_canvas[i].canv);
        }
 }
 /*
@@ -490,7 +531,7 @@ var addRow = function(p){
                 tr.setAttribute('class', 'checked');
                 
                 changeCheckProcess(pname);
-    },false);
+        },false);
         
         if(p.check == true)
             tr.setAttribute('class', 'checked');
@@ -639,18 +680,83 @@ var generateCpuContainer = function(){
         container.setAttribute('class', 'canvas_container');
         var name = document.createElement('h5');
         name.setAttribute('class', 'subHeader');
-        name.innerHTML = 'CPU ' + i;
+        var span = document.createElement('span');
+        span.innerHTML = 'CPU ' + i;
         var canvas = document.createElement('canvas');
         canvas.setAttribute('class', 'canvas');
         canvas.setAttribute('id', 'cpu_canvas_' + i);
         canvas.style.width = "400px";
         canvas.style.height = "200px";
         
+        name.appendChild(span);
         container.appendChild(name);
         container.appendChild(canvas);
         cpu_charts.appendChild(container);
         
         monitor.cpu_canvas.push(
+            {
+                ctx: canvas.getContext('2d'),
+                canv: canvas
+            }
+        );
+    }
+}
+/*
+#########################################
+    ALG. GENERAZIONE RAM CONTAINER
+#########################################
+*/
+var generateRamContainer = function(){
+    var ram_charts = monitor.ramContainer.getElementsByClassName('ram-charts')[0];
+    var container = document.createElement('div');
+    container.setAttribute('class', 'canvas_container');
+    var name = document.createElement('h5');
+    name.setAttribute('class', 'subHeader');
+    var span = document.createElement('span');
+    span.innerHTML = 'RAM';
+    var canvas = document.createElement('canvas');
+    canvas.setAttribute('class', 'canvas');
+    canvas.setAttribute('id', 'ram_canvas');
+    canvas.style.width = "400px";
+    canvas.style.height = "200px";
+    
+    name.appendChild(span);
+    container.appendChild(name);
+    container.appendChild(canvas);
+    ram_charts.appendChild(container);
+    
+    monitor.ram_canvas =
+        {
+            ctx: canvas.getContext('2d'),
+            canv: canvas
+        };
+}
+/*
+#########################################
+    ALG. GENERAZIONE HDD CONTAINER
+#########################################
+*/
+var generateHddContainer = function(){
+    var hdd_charts = monitor.hddContainer.getElementsByClassName('hdd-charts')[0];
+    for(var i = 0; i < components.hdd.length; i++){
+        var container = document.createElement('div');
+        container.setAttribute('class', 'canvas_container');
+        var name = document.createElement('h5');
+        name.setAttribute('class', 'subHeader');
+        var span = document.createElement('span');
+        span.innerHTML = 'HDD ' + i;
+        var canvas = document.createElement('canvas');
+        canvas.setAttribute('class', 'canvas');
+        canvas.setAttribute('id', 'ram_canvas');
+        canvas.style.width = "400px";
+        canvas.style.height = "200px";
+        
+        name.appendChild(span);
+        container.appendChild(name);
+        container.appendChild(canvas);
+        hdd_charts.appendChild(container);
+        
+        monitor.hdd_canvas.push(
             {
                 ctx: canvas.getContext('2d'),
                 canv: canvas
@@ -713,7 +819,8 @@ var generateUI = function(){
     setGeneralListeners();
     generateHome();
     generateCpuContainer();
-
+    generateRamContainer();
+    generateHddContainer();
     
 }
 
@@ -733,8 +840,10 @@ function draw(){
     step();
     animateHomePB();
     animateCpuContainer();
+    animateRamContainer();
+    animateHddContainer();
     console.log("check table consistency: " + checkTableConsistency());
 }
 
 main();
-setInterval(function(){draw()}, 3000);
+setInterval(function(){draw()}, 1100);

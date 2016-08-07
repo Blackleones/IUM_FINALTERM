@@ -70,10 +70,16 @@
                     </div>
                 </div>
                 <div class="ram_container" style="display:none" id="ram_container">
-                    
+                    <div class="ram-charts">
+                        <h3 class="header">Ram chart</h3>
+                        <!-- DA GENERARE TRAMITE SCRIPT -->
+                    </div>
                 </div>
-                <div class="hdd_container" id="hdd_container">
-                    
+                <div class="hdd_container" id="hdd_container" style="display:none">
+                    <div class="hdd-charts">
+                        <h3 class="header">Hdd chart</h3>
+                        <!-- DA GENERARE TRAMITE SCRIPT -->
+                    </div>
                 </div>
             </div>
         </div>
