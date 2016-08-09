@@ -162,20 +162,25 @@ function animate(s, radius, level){
     drawHdd();
     
     if(level == 3){
-        drawSectors(hddStruct.l3, hddStruct.radius3)
+        drawSectors(hddStruct.l3, hddStruct.radius3);
         drawCircle(s.startAngle, s.endAngle, radius, s.color);
         drawSectors(hddStruct.l2, hddStruct.radius2);
     }
     else if(level == 2){
-        drawSectors(hddStruct.l3, hddStruct.radius3)
+        drawSectors(hddStruct.l3, hddStruct.radius3);
         drawSectors(hddStruct.l2, hddStruct.radius2);
         drawCircle(s.startAngle, s.endAngle, radius, s.color);
     }
     
-    if(level != 1)
+    if(level != 1){
         drawCircle(hddStruct.l1.startAngle, hddStruct.l1.endAngle, hddStruct.radius1, hddStruct.l1.color);
-    else
+        var center = calcCenter(s, radius, level);
+        drawText(s, center);
+    }
+    else{
         drawCircle(s.startAngle, s.endAngle, radius, s.color);
+        drawText(s, {x: 200, y: 200});
+    }
 }
 
 canvas.addEventListener('mousemove', function(e){
@@ -183,6 +188,11 @@ canvas.addEventListener('mousemove', function(e){
     console.log(mousePos);
     hit(mousePos);
 }, false);
+
+function drawText(s, p){
+    ctx.font = "Bold 30px Roboto";
+    ctx.fillText(s.name, p.x, p.y);
+}
 
 function drawCircle(startAngle, endAngle, radius, color){
     ctx.fillStyle = color;
@@ -203,8 +213,81 @@ function drawHdd(){
 }
 
 function drawSectors(s, r){
-    for(var i = 0; i < s.length; i++)
+    for(var i = 0; i < s.length; i++){
         drawCircle(s[i].startAngle, s[i].endAngle, r, s[i].color);
+    }
+}
+
+function calcCenter(sector, radius, level){
+    var offset = 0;
+    
+    if(level != 1){
+        if(Math.abs(sector.startAngle - sector.endAngle) > Math.PI / 4)
+            offset = 110;
+        else
+            offset = 30;
+    }
+    
+    radius += offset;
+    
+    var o = {
+        x: 200,
+        y: 200
+    }
+    
+    var ps = {
+        x: o.x + radius * (Math.cos(sector.startAngle)),
+        y: o.y + radius * (Math.sin(sector.startAngle))
+    }
+    
+    var pe = {
+        x: o.x + radius * (Math.cos(sector.endAngle)),
+        y: o.y + radius * (Math.sin(sector.endAngle))
+    }
+    
+    var center = {
+        x: ((o.x + ps.x + pe.x) / 3),
+        y: ((o.y + ps.y + pe.y) / 3) 
+    }
+    
+    debugSector(o, ps, pe, center);
+
+    return center;
+}
+/*
+    funzioni di supporto per il debug dei settori
+*/
+function debugSector(o, ps, pe, center){
+    drawArc(ps);
+    drawArc(pe);
+    drawArc(o);
+    drawTriangle(o, ps, pe, center);
+}
+
+function drawTriangle(o, ps, pe, center){
+    console.log("start {x: " + ps.x + ",y: " + ps.y + "}" 
+        + "end {x: " + pe.x + ",y: " + pe.y + "}" 
+        + "center {x: " + center.x + ",y: " + center.y + "}");
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.lineTo(o.x, o.y);
+    ctx.lineTo(ps.x, ps.y);
+    ctx.lineTo(pe.x, pe.y);
+    ctx.lineTo(o.x, o.y);
+    ctx.stroke();   
+
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, 3, 0, 2 * Math.PI, false);
+    ctx.fill();
+    
+}
+
+function drawArc(p){
+    ctx.fillStyle = 'cyan';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI, false);
+    ctx.fill();
 }
 
 drawHdd();
