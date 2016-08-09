@@ -1,0 +1,8 @@
+.canvas_container{
+    padding: 0 80px;
+}
+
+.canvas{
+    border: 1px solid black;
+}
+

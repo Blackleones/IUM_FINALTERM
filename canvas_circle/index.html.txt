@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <div class="canvas_container">
+            <canvas id="canvas" class="canvas" width="400" height="400"></canvas>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
