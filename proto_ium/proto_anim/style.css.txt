@@ -203,3 +203,17 @@ body{
     display: block;
     
 }
+/*
+#########################################
+            UTILITY di SUPPORTO
+#########################################
+*/
+.fadeIn{
+    opacity: 1.0;
+    transition: 0.250s ease-in;
+}
+
+.fadeOut{
+    opacity: 0.0;
+    transition: 0.250s ease-out;
+}

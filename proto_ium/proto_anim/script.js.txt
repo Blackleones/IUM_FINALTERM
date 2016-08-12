@@ -3,6 +3,97 @@
     STRUTTURA DATI PER IL SIMULATORE
 #########################################
 */
+var hddStruct = 
+{
+    o: {x: 200.0, y: 200.0},
+    radius1 : 45,
+    radius2 : 85,
+    radius3 : 125,
+    l1: 
+    {
+        startAngle: 0,
+        endAngle: 2*Math.PI,
+        name: 'C:',
+        color: '#F77D7D'
+    },
+    l2: [
+            {
+                startAngle: 0,
+                endAngle: Math.PI / 4,
+                name: 'DOC',
+                color: 'red'
+            },
+            {
+                startAngle: Math.PI / 4,
+                endAngle: Math.PI / 2 + Math.PI / 3,
+                name: 'PROG',
+                color: 'yellow'
+            },
+            {
+                startAngle: Math.PI / 2 + Math.PI / 3,
+                endAngle: Math.PI,
+                name: 'FILE',
+                color: 'rgb(255, 204, 153)'
+            },
+            {
+                startAngle: Math.PI,
+                endAngle: Math.PI + Math.PI / 4,
+                name: 'USER',
+                color: 'blue'
+            },
+            {
+                startAngle: Math.PI + Math.PI / 4,
+                endAngle: 2*Math.PI,
+                name: 'SYS',
+                color: 'purple'
+            }
+        ],
+    l3: [
+            {
+                startAngle: 0,
+                endAngle: Math.PI / 6,
+                name: 'IMG',
+                color: 'rgb(212, 106, 106)'
+            },
+            {
+                startAngle: Math.PI / 6,
+                endAngle: Math.PI / 4 + Math.PI / 2,
+                name: 'FILMS',
+                color: 'rgb(71, 144, 48)'
+            },
+            {
+                startAngle: Math.PI / 4 + Math.PI / 2,
+                endAngle: Math.PI ,
+                name: 'GAMES',
+                color: 'rgb(112, 142, 164)'
+            },
+            {
+                startAngle: Math.PI,
+                endAngle: Math.PI + Math.PI / 8,
+                name: 'NEW',
+                color: 'rgb(255, 226, 170)'
+            },
+            {
+                startAngle: Math.PI + Math.PI / 8,
+                endAngle: Math.PI + Math.PI /6,
+                name: 'IUM',
+                color: 'rgb(170, 85, 133)'
+            },
+            {
+                startAngle: Math.PI + Math.PI / 6,
+                endAngle: Math.PI + Math.PI /2,
+                name: 'MUSIC',
+                color: 'rgb(170, 151, 57)'
+            },
+            {
+                startAngle: Math.PI + Math.PI / 2,
+                endAngle: 2 * Math.PI,
+                name: 'UNI',
+                color: 'rgb(251, 82, 82)'
+            }        
+        ],
+}
+
 var processDict = [
     'system',
     'windows explorer',
@@ -347,6 +438,7 @@ var changeCheckProcess = function(pname){
 ################################################################################
 */
 var monitor = {
+    currentView: 'home',
     homeContainer: undefined,
     cpuContainer: undefined,
     ramContainer: undefined,
@@ -357,7 +449,8 @@ var monitor = {
     table: undefined,
     cpu_canvas: [],
     ram_canvas: {},//un solo canvas
-    hdd_canvas: [],//un canvas per disco
+    hdd_canvas: [],
+    struct_canvas: {},
     cpu: [],
     ram: [],
     hdd: [],
@@ -367,7 +460,6 @@ var monitor = {
 ################################################################################
     ALG. ANIMAZIONE
 ################################################################################
-*/
 /*
 #########################################
     ALG. ANIMAZIONE HOME
@@ -450,7 +542,7 @@ function drawLine(points, ctx, canvas){
     
     for(var p in points){
         p = points[p];
-        ctx.lineTo(p.x, canvas.height - p.y);
+        ctx.lineTo(p.x, canvas.height - p.y * 2);//*2 è la scala
     }
 
     ctx.stroke();
@@ -462,7 +554,7 @@ function drawPoint(points, ctx, canvas){
     for(var p in points){
         p = points[p];
         ctx.beginPath();
-        ctx.arc(p.x, canvas.height - p.y, 3, 2 * Math.PI, false);
+        ctx.arc(p.x, canvas.height - p.y* 2, 3, 2 * Math.PI, false);//*2 è la scala
         ctx.fill();
     }
 
@@ -503,6 +595,9 @@ var animateHddContainer = function(){
             drawLine(components.hdd[i].points, monitor.hdd_canvas[i].ctx, monitor.hdd_canvas[i].canv);
             drawPoint(components.hdd[i].points, monitor.hdd_canvas[i].ctx, monitor.hdd_canvas[i].canv);
        }
+       
+        clearCanvas(monitor.struct_canvas.canv, monitor.struct_canvas.ctx);
+        drawHdd();
 }
 /*
 ################################################################################
@@ -676,20 +771,8 @@ var generateCpuContainer = function(){
     var cpu_charts = monitor.cpuContainer.getElementsByClassName('cpu-charts')[0];
     
     for(var i = 0; i < components.cpu.length; i++){
-        var container = document.createElement('div');
-        container.setAttribute('class', 'canvas_container');
-        var name = document.createElement('h5');
-        name.setAttribute('class', 'subHeader');
-        var span = document.createElement('span');
-        span.innerHTML = 'CPU ' + i;
-        var canvas = document.createElement('canvas');
-        canvas.setAttribute('class', 'canvas');
-        canvas.setAttribute('id', 'cpu_canvas_' + i);
-        canvas.style.width = "400px";
-        canvas.style.height = "200px";
-        
-        name.appendChild(span);
-        container.appendChild(name);
+        var container = generateContainer('CPU ' + i);
+        var canvas = generateCanvas('cpu_canvas_' + i, '400px', '200px');
         container.appendChild(canvas);
         cpu_charts.appendChild(container);
         
@@ -708,20 +791,8 @@ var generateCpuContainer = function(){
 */
 var generateRamContainer = function(){
     var ram_charts = monitor.ramContainer.getElementsByClassName('ram-charts')[0];
-    var container = document.createElement('div');
-    container.setAttribute('class', 'canvas_container');
-    var name = document.createElement('h5');
-    name.setAttribute('class', 'subHeader');
-    var span = document.createElement('span');
-    span.innerHTML = 'RAM';
-    var canvas = document.createElement('canvas');
-    canvas.setAttribute('class', 'canvas');
-    canvas.setAttribute('id', 'ram_canvas');
-    canvas.style.width = "400px";
-    canvas.style.height = "200px";
-    
-    name.appendChild(span);
-    container.appendChild(name);
+    var container = generateContainer('RAM');
+    var canvas = generateCanvas('ram_canvas', '400px', '200px');
     container.appendChild(canvas);
     ram_charts.appendChild(container);
     
@@ -739,20 +810,8 @@ var generateRamContainer = function(){
 var generateHddContainer = function(){
     var hdd_charts = monitor.hddContainer.getElementsByClassName('hdd-charts')[0];
     for(var i = 0; i < components.hdd.length; i++){
-        var container = document.createElement('div');
-        container.setAttribute('class', 'canvas_container');
-        var name = document.createElement('h5');
-        name.setAttribute('class', 'subHeader');
-        var span = document.createElement('span');
-        span.innerHTML = 'HDD ' + i;
-        var canvas = document.createElement('canvas');
-        canvas.setAttribute('class', 'canvas');
-        canvas.setAttribute('id', 'ram_canvas');
-        canvas.style.width = "400px";
-        canvas.style.height = "200px";
-        
-        name.appendChild(span);
-        container.appendChild(name);
+        var container = generateContainer('HDD ' + i);
+        var canvas = generateCanvas('hdd_canvas_' + i, '400px', '200px');
         container.appendChild(canvas);
         hdd_charts.appendChild(container);
         
@@ -763,12 +822,50 @@ var generateHddContainer = function(){
             }
         );
     }
+    
+    var sContainer = generateContainer('HDD STRUCT');
+    var sCanvas = generateCanvas('struct_canvas', '400px', '400px');
+    sContainer.appendChild(sCanvas);
+    hdd_charts.appendChild(sContainer);
+    
+    monitor.struct_canvas = {
+        ctx: sCanvas.getContext('2d'),
+        canv: sCanvas
+    };
+    
+    
+    monitor.struct_canvas.ctx.beginPath();
+    monitor.struct_canvas.ctx.arc(200,145,3,0,2*Math.PI, false);
+    monitor.struct_canvas.ctx.stroke();
+    
 }
 /*
 #########################################
     ALG. GENERAZIONE UI COMUNI
 #########################################
 */
+function generateCanvas(canvasId, w, h){
+    var canvas = document.createElement('canvas');
+    canvas.setAttribute('class', 'canvas');
+    canvas.setAttribute('id', canvasId);
+    canvas.setAttribute('width', w);
+    canvas.setAttribute('height', h);
+    return canvas;
+}
+
+function generateContainer(spanText){
+    var container = document.createElement('div');
+    container.setAttribute('class', 'canvas_container');
+    var name = document.createElement('h5');
+    name.setAttribute('class', 'subHeader');
+    var span = document.createElement('span');
+    span.innerHTML = spanText;
+    name.appendChild(span);
+    container.appendChild(name);
+    
+    return container;
+}
+
 var setGeneralListeners = function(){
     var navbar = document.getElementById('navbar');
     var ul = navbar.getElementsByTagName('ul')[0];
@@ -785,29 +882,85 @@ var setGeneralListeners = function(){
         monitor.hddContainer.style.display = 'none';
     }
     
+    function fadeOut(view){
+        var opacity = 1;
+        var fadeEffect = setInterval(function () {
+            if (opacity == 0) {
+                view.style.opacity = 1;
+            }
+            if (opacity < 0.1) {
+                clearInterval(fadeEffect);
+            } else {
+                view.style.opaticy = opacity;
+                opacity -= 0.1;
+            }
+        }, 80);
+    }
+    
+    function fadeIn(view){
+        var opacity = 0.0;
+        var fadeEffect = setInterval(function () {
+            if (opacity == 1) {
+                view.style.opacity = 1;
+            }
+            if (opacity > 0.9) {
+                clearInterval(fadeEffect);
+            } else {
+                view.style.opacity = opacity;
+                opacity += 0.1;
+            }
+        }, 150);
+    }
+    
+    function startFadeOut(){
+        if(monitor.currentView == 'home')
+            fadeOut(monitor.homeContainer);
+        else if(monitor.currentView == 'cpu')
+            fadeOut(monitor.cpuContainer);
+        else if(monitor.currentView == 'ram')
+            fadeOut(monitor.ramContainer);
+        else if(monitor.currentView == 'hdd')
+            fadeOut(monitor.hddContainer);
+    }
+    
     li[0].addEventListener("click",function(e){
         clearTabs();
         li[0].setAttribute('class', 'menu_selected');
         monitor.homeContainer.style.display = '';
+        startFadeOut();
+        monitor.currentView = 'home';
+        fadeIn(monitor.homeContainer);
     },false);
     
     li[1].addEventListener("click",function(e){
         clearTabs();
         li[1].setAttribute('class', 'menu_selected');
         monitor.cpuContainer.style.display = '';
+        monitor.currentView = 'cpu';
+        fadeIn(monitor.cpuContainer);
     },false);
     
     li[2].addEventListener("click",function(e){
         clearTabs();
         li[2].setAttribute('class', 'menu_selected');
         monitor.ramContainer.style.display = '';
+        monitor.currentView = 'ram';
+        fadeIn(monitor.ramContainer);
     },false);
     
     li[3].addEventListener("click",function(e){
         clearTabs();
         li[3].setAttribute('class', 'menu_selected');
         monitor.hddContainer.style.display = '';
+        monitor.currentView = 'hdd'
+        fadeIn(monitor.hddContainer);
     },false);
+    
+    monitor.struct_canvas.canv.addEventListener('mousemove', function(e){
+    var mousePos = getMousePosition(monitor.struct_canvas.canv, e);
+    console.log(mousePos);
+    hit(mousePos);
+}, false);
 }
 
 var generateUI = function(){
@@ -816,15 +969,166 @@ var generateUI = function(){
     monitor.ramContainer = document.getElementById('ram_container');
     monitor.hddContainer = document.getElementById('hdd_container');
     
-    setGeneralListeners();
     generateHome();
     generateCpuContainer();
     generateRamContainer();
     generateHddContainer();
-    
+    setGeneralListeners();
 }
 
-/*test*/
+function getMousePosition(canvas, e){
+    var rect = canvas.getBoundingClientRect();
+    return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+}
+
+function hit(point){
+    var p = {x: point.x - 200, y: point.y - 200};
+    var angle = Math.atan2(p.x, p.y);
+    //da modificare con radius3
+    if(Math.pow(p.x, 2) + Math.pow(p.y, 2) < Math.pow(hddStruct.radius3, 2)){
+
+        if(p.x < 0 && p.y > 0){
+            angle = Math.PI / 2 + Math.abs(angle);
+            //console.log("quad 1: " + angle);
+        }
+        else if(p.x < 0 && p.y < 0){
+            angle = Math.PI / 2 + Math.abs(angle);
+            //console.log("quad 2: " + angle);
+        }
+        else if(p.x > 0 && p.y < 0){
+            angle = 2 * Math.PI - Math.abs(Math.PI / 2 - angle);
+            //console.log("quad 3: " + angle);
+        }
+        else{
+            angle = Math.PI / 2 - angle;
+            //console.log("quad 0: " + angle);
+        }
+        
+        if(Math.pow(p.x, 2) + Math.pow(p.y, 2) < Math.pow(hddStruct.radius1, 2)){
+            animate(hddStruct.l1, hddStruct.radius1 + 20, 1);   
+        }
+        else if(Math.pow(p.x, 2) + Math.pow(p.y, 2) < Math.pow(hddStruct.radius2, 2)){
+            console.log('l2');
+            for(var i = 0; i < hddStruct.l2.length; i++){
+                if(angle > hddStruct.l2[i].startAngle && angle < hddStruct.l2[i].endAngle){
+                    console.log("il punto appartiene al settore " + hddStruct.l2[i].color.toLocaleUpperCase());
+                    animate(hddStruct.l2[i], hddStruct.radius2 + 60, 2);
+                }
+            }
+        }
+        else if(Math.pow(p.x, 2) + Math.pow(p.y, 2) < Math.pow(hddStruct.radius3, 2)){
+            console.log('l3');
+            for(var i = 0; i < hddStruct.l3.length; i++){
+                if(angle > hddStruct.l3[i].startAngle && angle < hddStruct.l3[i].endAngle){
+                    console.log("il punto appartiene al settore " + hddStruct.l3[i].color.toLocaleUpperCase());
+                    animate(hddStruct.l3[i], hddStruct.radius3 + 60, 3);
+                }
+            }
+        }
+    }
+    else{
+        drawHdd();
+    }
+}
+
+function animate(s, radius, level){
+    drawHdd();
+    console.log("LEVEL = " + level);
+    if(level == 3){
+        drawSectors(hddStruct.l3, hddStruct.radius3);
+        drawCircle(s.startAngle, s.endAngle, radius, s.color);
+        drawSectors(hddStruct.l2, hddStruct.radius2);
+    }
+    else if(level == 2){
+        drawSectors(hddStruct.l3, hddStruct.radius3);
+        drawSectors(hddStruct.l2, hddStruct.radius2);
+        drawCircle(s.startAngle, s.endAngle, radius, s.color);
+    }
+    
+    if(level != 1){
+        drawCircle(hddStruct.l1.startAngle, hddStruct.l1.endAngle, hddStruct.radius1, hddStruct.l1.color);
+        var center = calcCenter(s, radius, level);
+        drawText(s, center);
+    }
+    else{
+        drawCircle(s.startAngle, s.endAngle, radius, s.color);
+        drawText(s, {x: 200.0, y: 200.0});
+    }
+}
+
+function drawText(s, p){
+    var ctx = monitor.struct_canvas.ctx;
+    
+    ctx.font = "Bold 17px Roboto";
+    ctx.fillStyle = 'black';
+    ctx.fillText(s.name, p.x, p.y);
+}
+
+function drawCircle(startAngle, endAngle, radius, color){
+    var ctx = monitor.struct_canvas.ctx;
+    
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.lineTo(200,200);
+    ctx.arc(200, 200, radius, startAngle, endAngle, false);
+    ctx.lineTo(200,200);
+    ctx.stroke();
+    ctx.fill();
+}
+
+function drawHdd(){
+    clearCanvas(monitor.struct_canvas.canv, monitor.struct_canvas.ctx);
+    drawSectors(hddStruct.l3, hddStruct.radius3);
+    drawSectors(hddStruct.l2, hddStruct.radius2);
+    drawCircle(hddStruct.l1.startAngle, hddStruct.l1.endAngle, hddStruct.radius1, hddStruct.l1.color);
+}
+
+function drawSectors(s, r){
+    for(var i = 0; i < s.length; i++){
+        drawCircle(s[i].startAngle, s[i].endAngle, r, s[i].color);
+    }
+}
+
+function calcCenter(sector, radius, level){
+    var offset = 0;
+    
+    if(level != 1){
+        if(Math.abs(sector.startAngle - sector.endAngle) > Math.PI / 4)
+            offset = 100;
+        else
+            offset = 30;
+    }
+    
+    radius += offset;
+    
+    var o = {
+        x: 200,
+        y: 200
+    }
+    
+    var ps = {
+        x: o.x + radius * (Math.cos(sector.startAngle)),
+        y: o.y + radius * (Math.sin(sector.startAngle))
+    }
+    
+    var pe = {
+        x: o.x + radius * (Math.cos(sector.endAngle)),
+        y: o.y + radius * (Math.sin(sector.endAngle))
+    }
+    
+    var center = {
+        x: ((o.x + ps.x + pe.x) / 3),
+        y: ((o.y + ps.y + pe.y) / 3) 
+    }
+
+    return center;
+}
+
+/*main*/
 function main()
 {
     initComponents(4,2);
